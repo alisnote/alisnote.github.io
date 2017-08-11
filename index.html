@@ -325,27 +325,46 @@
       
         
           
-            <p>随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。</p>
-<h2 id="节点故障后流量的切换方式"><a href="#节点故障后流量的切换方式" class="headerlink" title="节点故障后流量的切换方式"></a>节点故障后流量的切换方式</h2><p>1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经历几个步骤：检测到故障，产生链路状态更新，泛洪到整个网络，重新计算路由表安装进FIB表。这样的收敛速度是很慢的，通常在1S以上了，为了加快IGP路由协议的收敛速度，可以利用BFD快速检测关联路由协议来加速收敛，但是速度依然在几百毫秒。</p>
-<p>2.IP FRR方式：在网络节点故障前就计算出一条备份路径，网络节点故障时快速切换流量，切换速度50ms以内。早期LFA IP FRR是基于2008年发布的RFC5286来实现的，但是只有部分节点可以计算出备份路径；后来RLFA IP FRR基于2015年发布的RFC7490来实现，可以实现大部分网络节点可以计算出备份路径</p>
-<h2 id="IP-FRR：Loop-Free-Alternates（LFA）"><a href="#IP-FRR：Loop-Free-Alternates（LFA）" class="headerlink" title="IP FRR：Loop-Free Alternates（LFA）"></a>IP FRR：Loop-Free Alternates（LFA）</h2><p>基于SPF算法，计算出备份路径，网络节点故障时，快速切换流量到备份路径，无需等待路由收敛。以RFC5286第三页举的这个例子为例</p>
-<p>1</p>
-<p>A neighbor N can provide a loop-free alternate (LFA) if and only if ：Distance_opt(N, D) &lt; Distance_opt(N, S) + Distance_opt(S, D) 特别注意，这里是a neighbor不是remote neighbor，所以RFC5286计算出来的LFA永远是S的相连的邻居LFA是基于SPF算法的，所有路由器都有整个区域的路由器的链路状态信息，路由器S根据SPF算法计算出到目的路由器D的主用下一条是E，然后再计算上面的不等式：<br>Distance_opt(N, D) &lt; Distance_opt(N, S) + Distance_opt(S, D)发现3&lt;8+9不等式成立，选择N为loop-free alternate，也就是备份下一跳。<br>Distance_opt(N, D)：备份下一跳到目的节点的cost值<br>Distance_opt(N, S)：备份节点到始发节点的cost值<br>Distance_opt(S, D)：始发节点到目的节点的cost值</p>
+            <h4 id="传统网络节点故障后流量切换"><a href="#传统网络节点故障后流量切换" class="headerlink" title="传统网络节点故障后流量切换"></a>传统网络节点故障后流量切换</h4><p>节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经历几个步骤：检测到故障，产生链路状态更新，泛洪到整个网络，重新计算路由表安装进FIB表。这样的收敛速度是很慢的，通常在1S以上了，为了加快IGP路由协议的收敛速度，可以利用BFD快速检测关联路由协议来加速收敛，但是速度依然在几百毫秒。</p>
+<h4 id="IP-FRR满足网络快速切换新需求"><a href="#IP-FRR满足网络快速切换新需求" class="headerlink" title="IP FRR满足网络快速切换新需求"></a>IP FRR满足网络快速切换新需求</h4><p>随着越来越多运营商和企业网络ALL IP架构的提出，对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换,IP FRR技术是当前主流的解决方案。在网络节点故障前就计算出一条备份路径，网络节点故障时快速切换流量，切换速度50ms以内。早期LFA IP FRR是基于2008年发布的RFC5286来实现的，但是只有部分节点可以计算出备份路径；后来RLFA IP FRR基于2015年发布的RFC7490来实现，可以实现大部分网络节点可以计算出备份路径。下面主要来研究下LFA和RLFA</p>
+<h4 id="Loop-Free-Alternates-LFA"><a href="#Loop-Free-Alternates-LFA" class="headerlink" title="Loop-Free Alternates(LFA)"></a>Loop-Free Alternates(LFA)</h4><p>基于SPF算法，计算出备份路径，网络节点故障时，快速切换流量到备份路径，无需等待路由收敛。以RFC5286第三页举的这个例子为例</p>
+<p><img src="/2017/08/11/RLFA/Figure-001.png" alt=""></p>
+<p>A neighbor N can provide a loop-free alternate (LFA) if and only if ：Distance_opt(N, D) &lt; Distance_opt(N, S) + Distance_opt(S, D) 特别注意，这里是a neighbor不是remote neighbor，所以RFC5286计算出来的LFA永远是S的相连的邻居LFA是基于SPF算法的，所有路由器都有整个区域的路由器的链路状态信息，路由器S根据SPF算法计算出到目的路由器D的主用下一条是E，然后再计算上面的不等式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Distance_opt(N,D)&lt;Distance_opt(N,S)+Distance_opt(S,D)</div><div class="line">Distance_opt(N, D)：备份下一跳到目的节点的cost值</div><div class="line">Distance_opt(N, S)：备份节点到始发节点的cost值</div><div class="line">Distance_opt(S, D)：始发节点到目的节点的cost值</div></pre></td></tr></table></figure></p>
+<p><strong>发现3&lt;8+9不等式成立，选择N为loop-free alternate，也就是备份下一跳。</strong></p>
 <p>无意间在网上找了一本书，里面的一个列子也挺好《MPLS in the SDN Era》</p>
-<p>2</p>
-<p>PE4为始发节点，P1为目的节点：</p>
-<p>1.主用路径计算。始发节点根据SPF算法计算出到达目的节点P1的最短路径：PE4-&gt;P2-&gt;PE2-&gt;PE1-&gt;P1，cost为550，P2为主用下一跳<br>2.备用路径计算。始发节点还有3个邻居P6，P5，PE3，分别计算是否满足不等式，最终满足不等式的为P5，作为备用下一跳<br>P6:Distance_opt(P6, P1) &lt; Distance_opt(P6, PE4) + Distance_opt(PE4, P1)，750(P6-&gt;PE4-&gt;P2-&gt;PE2-&gt;PE1-&gt;P1)<200(p6->PE4)+550(PE4-&gt;P2-&gt;PE2-&gt;PE1-&gt;P1)等式不成立，P6不能作为LFA<br>P5:Distance_opt(P5, P1) &lt; Distance_opt(P5, PE4) + Distance_opt(PE4, P1)，600(P5-&gt;P3-&gt;P1)<100(p5->PE4)+550(PE4-&gt;P2-&gt;PE2-&gt;PE1-&gt;P1)等式不成立，P5作为LFA<br>PE3:显然也不满足</100(p5-></200(p6-></p>
-<p>LFA存在的问题：<br>1.必须得满足不等式才可以作为LFA，只能保证一部分节点有LFA<br>2.对于环形组网会出现micro loop。还是以RFC5286举例</p>
-<p>3</p>
+<p><img src="/2017/08/11/RLFA/Figure-002.png" alt=""></p>
+<p><strong>PE4为始发节点，P1为目的节点：</strong></p>
+<blockquote>
+<p>主用路径计算: 始发节点根据SPF算法计算出到达目的节点P1的最短路径：PE4-&gt;P2-&gt;PE2-&gt;PE1-&gt;P1，cost为550，P2为主用下一跳<br>备用路径计算: 始发节点还有3个邻居P6，P5，PE3，分别计算是否满足不等式，最终满足不等式的为P5，作为备用下一跳</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">P6:Distance_opt(P6,P1)&lt;Distance_opt(P6,PE4)+Distance_opt(PE4, P1)</div><div class="line">P6:750(P6-&gt;PE4-&gt;P2-&gt;PE2-&gt;PE1-&gt;P1)&lt;200(P6-&gt;PE4)+550(PE4-&gt;P2-&gt;PE2-&gt;PE1-&gt;P1)</div></pre></td></tr></table></figure>
+<p>等式不成立，P6不能作为LFA</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">P5:Distance_opt(P5,P1)&lt;Distance_opt(P5,PE4)+Distance_opt(PE4, P1)</div><div class="line">P5:600(P5-&gt;P3-&gt;P1)&lt;100(P5-&gt;PE4)+550(PE4-&gt;P2-&gt;PE2-&gt;PE1-&gt;P1)</div></pre></td></tr></table></figure>
+<p>等式成立，P5作为LFA；PE3等式显然也不满足，不能作为LFA</p>
+<p><strong>LFA也存在一些问题：</strong></p>
+<ul>
+<li>必须得满足不等式才可以作为LFA，只能保证一部分节点有LFA</li>
+<li>对于环形组网会出现micro loop。还是以RFC5286举例</li>
+</ul>
+<p><img src="/2017/08/11/RLFA/Figure-003.png" alt=""></p>
 <p>部署了LFA后，到目的节点D，起始节点S和节点N是互为LFA的，但是如果节点E失效，节点S回把流量转发给LFA N，节点N又回把流量转发给LFA S，形成nicro loop</p>
-<h2 id="IP-FRR：Remote-Loop-Free-Alternate（RLFA）"><a href="#IP-FRR：Remote-Loop-Free-Alternate（RLFA）" class="headerlink" title="IP FRR：Remote Loop-Free Alternate（RLFA）"></a>IP FRR：Remote Loop-Free Alternate（RLFA）</h2><p>LFA计算出来的备份下一跳永远是他的直连邻居，RLFA通过tunnel技术，将远端的PQ节点作为备份下一跳， 使得LFA做了很好的扩展，能够保证更多的节点有备份下一跳</p>
+<h4 id="Remote-Loop-Free-Alternate（RLFA）"><a href="#Remote-Loop-Free-Alternate（RLFA）" class="headerlink" title="Remote Loop-Free Alternate（RLFA）"></a>Remote Loop-Free Alternate（RLFA）</h4><p>LFA计算出来的备份下一跳永远是他的直连邻居，RLFA通过tunnel技术，将远端的PQ节点作为备份下一跳， 使得LFA做了很好的扩展，能够保证更多的节点有备份下一跳</p>
 <p>几个概念，以RFC7490第四页拓扑为例，S-&gt;E为需要保护的链路，对于S节点：</p>
-<p>4</p>
-<p>1.P-Space：S节点能够到达的这些节点的集合，基于SPF算法S节点到达这些节点的最短路径不经过保护链路S-&gt;E，排除掉等价路径经过保护链路S-&gt;E的节点。上面的拓扑中S基于SPF算法到达A，B，C节点的路径可以不经过保护链路S-&gt;E，但是S到C的一条等价路径S-&gt;E-&gt;D-&gt;C经过了保护链路，所以C不能算作P-Space<br>2.Q-Space：能够到达E节点的这些节点的集合，基于SPF算法能到达E的这些节点的最短路径不经过保护链路S-&gt;E，排除掉等价路径经过保护链路S-&gt;E的节点。上面拓扑中B，C，D节点基于SPF算法到达E节点的路径可以不经过保护链路S-&gt;E，但是B节点有一条等价路径经过了保护链路S-&gt;E，所以Q-Space是C，D<br>3.PQ点:P-Space和Q-Space的交集就是PQ点。当算不出PQ点的时候，就需要运行Extended P-space来进一步计算。<br>4.Extended P-space：再次以S节点的邻居A为根节点来计算出P-Space为B，C，那么最终的Extended P-space为A，B，C，由于Q-Space为C，D，所以交集为C，C为节点S到E链路的PQ点，作为RLFA。</p>
+<p><img src="/2017/08/11/RLFA/Figure-004.png" alt=""></p>
+<ul>
+<li>P-Space：S节点能够到达的这些节点的集合，基于SPF算法S节点到达这些节点的最短路径不经过保护链路S-&gt;E，排除掉等价路径经过保护链路S-&gt;E的节点。上面的拓扑中S基于SPF算法到达A，B，C节点的路径可以不经过保护链路S-&gt;E，但是S到C的一条等价路径S-&gt;E-&gt;D-&gt;C经过了保护链路，所以C不能算作P-Space</li>
+<li>Q-Space：能够到达E节点的这些节点的集合，基于SPF算法能到达E的这些节点的最短路径不经过保护链路S-&gt;E，排除掉等价路径经过保护链路S-&gt;E的节点。上面拓扑中B，C，D节点基于SPF算法到达E节点的路径可以不经过保护链路S-&gt;E，但是B节点有一条等价路径经过了保护链路S-&gt;E，所以Q-Space是C，D</li>
+<li>PQ点:P-Space和Q-Space的交集就是PQ点。当算不出PQ点的时候，就需要运行Extended P-space来进一步计算。</li>
+<li>Extended P-space：再次以S节点的邻居A为根节点来计算出P-Space为B，C，那么最终的Extended P-space为A，B，C，由于Q-Space为C，D，所以交集为C，C为节点S到E链路的PQ点，作为RLFA。</li>
+</ul>
 <p>RLFA的设计思想：选择这么一个PQ节点作为RLFA，源节点S与RLFA之间建立tunnel，在不经过需要保护链路的前提下，源节点S首先通过属于P-Space LSP将流量转发给它，然后它通过属于Q-Space LSP将流量转发给目的节点E，这样以来，RLFA不再局限于LFA的苛刻条件，能够保证更多的节点有RLFA，另外，当需要保护链路中断，会首先把流量转发给远端的PQ而不是直连邻居，可以避免micro loop的出现。</p>
-<p>以《MPLS in the SDN Era》书中的例子，S-&gt;E为需要保护的链路</p>
+<p> 以《MPLS in the SDN Era》书中的例子，S-&gt;E为需要保护的链路</p>
 <p><img src="/2017/08/11/RLFA/Figure-005.png" alt="RLFA"></p>
-<p>1.P-Space计算：PE1节点计算出到达PE2，P2，P4，P6，PE4，PE3，P5节点的最短路径不经过保护路径<br>2.Q-Space计算：PE1节点计算出只有P5，P3节点到达P1节点不经过保护链路<br>3.PQ点：P-Space为PE2，P2，P4，P6，PE4，PE3，P5；Q-Space为P5，P3；PQ点为P5</p>
+<ul>
+<li>P-Space计算：PE1节点计算出到达PE2，P2，P4，P6，PE4，PE3，P5节点的最短路径不经过保护路径</li>
+<li>Q-Space计算：PE1节点计算出只有P5，P3节点到达P1节点不经过保护链路</li>
+<li>PQ点：P-Space为PE2，P2，P4，P6，PE4，PE3，P5；Q-Space为P5，P3；PQ点为P5</li>
+</ul>
 
           
         

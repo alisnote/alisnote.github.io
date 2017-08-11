@@ -344,7 +344,7 @@
 <p>1.P-Space：S节点能够到达的这些节点的集合，基于SPF算法S节点到达这些节点的最短路径不经过保护链路S-&gt;E，排除掉等价路径经过保护链路S-&gt;E的节点。上面的拓扑中S基于SPF算法到达A，B，C节点的路径可以不经过保护链路S-&gt;E，但是S到C的一条等价路径S-&gt;E-&gt;D-&gt;C经过了保护链路，所以C不能算作P-Space<br>2.Q-Space：能够到达E节点的这些节点的集合，基于SPF算法能到达E的这些节点的最短路径不经过保护链路S-&gt;E，排除掉等价路径经过保护链路S-&gt;E的节点。上面拓扑中B，C，D节点基于SPF算法到达E节点的路径可以不经过保护链路S-&gt;E，但是B节点有一条等价路径经过了保护链路S-&gt;E，所以Q-Space是C，D<br>3.PQ点:P-Space和Q-Space的交集就是PQ点。当算不出PQ点的时候，就需要运行Extended P-space来进一步计算。<br>4.Extended P-space：再次以S节点的邻居A为根节点来计算出P-Space为B，C，那么最终的Extended P-space为A，B，C，由于Q-Space为C，D，所以交集为C，C为节点S到E链路的PQ点，作为RLFA。</p>
 <p>RLFA的设计思想：选择这么一个PQ节点作为RLFA，源节点S与RLFA之间建立tunnel，在不经过需要保护链路的前提下，源节点S首先通过属于P-Space LSP将流量转发给它，然后它通过属于Q-Space LSP将流量转发给目的节点E，这样以来，RLFA不再局限于LFA的苛刻条件，能够保证更多的节点有RLFA，另外，当需要保护链路中断，会首先把流量转发给远端的PQ而不是直连邻居，可以避免micro loop的出现。</p>
 <p>以《MPLS in the SDN Era》书中的例子，S-&gt;E为需要保护的链路</p>
-<p>5.png</p>
+<p><img src="/2017/08/11/RLFA/Figure-005.png" alt="RLFA"></p>
 <p>1.P-Space计算：PE1节点计算出到达PE2，P2，P4，P6，PE4，PE3，P5节点的最短路径不经过保护路径<br>2.Q-Space计算：PE1节点计算出只有P5，P3节点到达P1节点不经过保护链路<br>3.PQ点：P-Space为PE2，P2，P4，P6，PE4，PE3，P5；Q-Space为P5，P3；PQ点为P5</p>
 
           

@@ -94,13 +94,17 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Ali&#39;s Note">
-<meta property="og:url" content="http://alisnote.github.io/archives/2017/08/index.html">
+<meta name="description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 一、目前的IP网络，在某个节点故障后实现流量的切换有两种方式： 1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RLFA IP FRR">
+<meta property="og:url" content="http://alisnote.github.io/2017/08/11/RLFA/index.html">
 <meta property="og:site_name" content="Ali&#39;s Note">
+<meta property="og:description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 一、目前的IP网络，在某个节点故障后实现流量的切换有两种方式： 1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-11T11:45:21.340Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ali&#39;s Note">
+<meta name="twitter:title" content="RLFA IP FRR">
+<meta name="twitter:description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 一、目前的IP网络，在某个节点故障后实现流量的切换有两种方式： 1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经">
 
 
 
@@ -129,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://alisnote.github.io/archives/2017/08/"/>
+  <link rel="canonical" href="http://alisnote.github.io/2017/08/11/RLFA/"/>
 
 
 
 
 
-  <title>归档 | Ali's Note</title>
+  <title>RLFA IP FRR | Ali's Note</title>
   
 
 
@@ -154,7 +158,7 @@
     
   
 
-  <div class="container sidebar-position-left  page-archive  ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -238,74 +242,130 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
-
-      <span class="archive-page-counter">
-        
-        
-        
-          
-        
-        嗯..! 目前共计 1 篇日志。 继续努力。
-      </span>
-
-      
-
-        
-        
-        
-
-        
-          
-          <div class="collection-title">
-            <h2 class="archive-year motion-element" id="archive-year-2017">2017</h2>
-          </div>
-        
-        
-
-        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alisnote.github.io/2017/08/11/RLFA/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ali">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ali's Note">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2017/08/11/RLFA/" itemprop="url">
-              
-                <span itemprop="name">RLFA IP FRR</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">RLFA IP FRR</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-08-11T19:44:18+08:00"
-              content="2017-08-11" >
-          08-11
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-11T19:44:18+08:00">
+                2017-08-11
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
 
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。</p>
+<p>一、目前的IP网络，在某个节点故障后实现流量的切换有两种方式：</p>
+<p>1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经历几个步骤：检测到故障，产生链路状态更新，泛洪到整个网络，重新计算路由表安装进FIB表。这样的收敛速度是很慢的，通常在1S以上了，为了加快IGP路由协议的收敛速度，可以利用BFD快速检测关联路由协议来加速收敛，但是速度依然在几百毫秒。</p>
+<p>2.IP FRR方式：在网络节点故障前就计算出一条备份路径，网络节点故障时快速切换流量，切换速度50ms以内。早期LFA IP FRR是基于2008年发布的RFC5286来实现的，但是只有部分节点可以计算出备份路径；后来RLFA IP FRR基于2015年发布的RFC7490来实现，可以实现大部分网络节点可以计算出备份路径</p>
+<p>二、IP FRR：Loop-Free Alternates（LFA）</p>
+<p>基于SPF算法，计算出备份路径，网络节点故障时，快速切换流量到备份路径，无需等待路由收敛。以RFC5286第三页举的这个例子为例</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
 
       
 
-    </div>
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -313,6 +373,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -561,11 +625,9 @@
 
 
   
-  
-    <script type="text/javascript" id="motion.page.archive">
-      $('.archive-year').velocity('transition.slideLeftIn');
-    </script>
-  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
 
 
   

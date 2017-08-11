@@ -94,18 +94,18 @@
 
 
 
-<meta name="description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 一、目前的IP网络，在某个节点故障后实现流量的切换有两种方式： 1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经">
+<meta name="description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 节点故障后流量的切换方式1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经历几个步骤：检测到故障，产生链路状态更新">
 <meta name="keywords" content="RLFA LFA FRR">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RLFA IP FRR">
 <meta property="og:url" content="http://alisnote.github.io/2017/08/11/RLFA/index.html">
 <meta property="og:site_name" content="Ali&#39;s Note">
-<meta property="og:description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 一、目前的IP网络，在某个节点故障后实现流量的切换有两种方式： 1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经">
+<meta property="og:description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 节点故障后流量的切换方式1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经历几个步骤：检测到故障，产生链路状态更新">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-11T11:55:49.035Z">
+<meta property="og:updated_time" content="2017-08-11T12:04:43.863Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RLFA IP FRR">
-<meta name="twitter:description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 一、目前的IP网络，在某个节点故障后实现流量的切换有两种方式： 1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经">
+<meta name="twitter:description" content="随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。 节点故障后流量的切换方式1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经历几个步骤：检测到故障，产生链路状态更新">
 
 
 
@@ -325,11 +325,9 @@
 
       
         <p>随着运营商网络ALL IP架构的提出，LTE对IP网络流量的快速倒换也提出了更高的要求，新的架构需要在小于50ms的时间内完成业务的倒换，RLFA技术是当前主流的解决方案。</p>
-<p>一、目前的IP网络，在某个节点故障后实现流量的切换有两种方式：</p>
-<p>1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经历几个步骤：检测到故障，产生链路状态更新，泛洪到整个网络，重新计算路由表安装进FIB表。这样的收敛速度是很慢的，通常在1S以上了，为了加快IGP路由协议的收敛速度，可以利用BFD快速检测关联路由协议来加速收敛，但是速度依然在几百毫秒。</p>
+<h2 id="节点故障后流量的切换方式"><a href="#节点故障后流量的切换方式" class="headerlink" title="节点故障后流量的切换方式"></a>节点故障后流量的切换方式</h2><p>1.路由快速收敛：节点故障后，路由协议重新收敛，流量按照新计算出来的路径转发，流量切换速度比较慢。以OSPF/ISIS链路状态路由协议来说，当网络节点故障后，会经历几个步骤：检测到故障，产生链路状态更新，泛洪到整个网络，重新计算路由表安装进FIB表。这样的收敛速度是很慢的，通常在1S以上了，为了加快IGP路由协议的收敛速度，可以利用BFD快速检测关联路由协议来加速收敛，但是速度依然在几百毫秒。</p>
 <p>2.IP FRR方式：在网络节点故障前就计算出一条备份路径，网络节点故障时快速切换流量，切换速度50ms以内。早期LFA IP FRR是基于2008年发布的RFC5286来实现的，但是只有部分节点可以计算出备份路径；后来RLFA IP FRR基于2015年发布的RFC7490来实现，可以实现大部分网络节点可以计算出备份路径</p>
-<p>二、IP FRR：Loop-Free Alternates（LFA）</p>
-<p>基于SPF算法，计算出备份路径，网络节点故障时，快速切换流量到备份路径，无需等待路由收敛。以RFC5286第三页举的这个例子为例</p>
+<h2 id="IP-FRR：Loop-Free-Alternates（LFA）"><a href="#IP-FRR：Loop-Free-Alternates（LFA）" class="headerlink" title="IP FRR：Loop-Free Alternates（LFA）"></a>IP FRR：Loop-Free Alternates（LFA）</h2><p>基于SPF算法，计算出备份路径，网络节点故障时，快速切换流量到备份路径，无需等待路由收敛。以RFC5286第三页举的这个例子为例</p>
 <p>1</p>
 <p>A neighbor N can provide a loop-free alternate (LFA) if and only if ：Distance_opt(N, D) &lt; Distance_opt(N, S) + Distance_opt(S, D) 特别注意，这里是a neighbor不是remote neighbor，所以RFC5286计算出来的LFA永远是S的相连的邻居LFA是基于SPF算法的，所有路由器都有整个区域的路由器的链路状态信息，路由器S根据SPF算法计算出到目的路由器D的主用下一条是E，然后再计算上面的不等式：<br>Distance_opt(N, D) &lt; Distance_opt(N, S) + Distance_opt(S, D)发现3&lt;8+9不等式成立，选择N为loop-free alternate，也就是备份下一跳。<br>Distance_opt(N, D)：备份下一跳到目的节点的cost值<br>Distance_opt(N, S)：备份节点到始发节点的cost值<br>Distance_opt(S, D)：始发节点到目的节点的cost值</p>
 <p>无意间在网上找了一本书，里面的一个列子也挺好《MPLS in the SDN Era》</p>
@@ -339,8 +337,7 @@
 <p>LFA存在的问题：<br>1.必须得满足不等式才可以作为LFA，只能保证一部分节点有LFA<br>2.对于环形组网会出现micro loop。还是以RFC5286举例</p>
 <p>3</p>
 <p>部署了LFA后，到目的节点D，起始节点S和节点N是互为LFA的，但是如果节点E失效，节点S回把流量转发给LFA N，节点N又回把流量转发给LFA S，形成nicro loop</p>
-<p>三、IP FRR：Remote Loop-Free Alternate（RLFA）</p>
-<p>LFA计算出来的备份下一跳永远是他的直连邻居，RLFA通过tunnel技术，将远端的PQ节点作为备份下一跳， 使得LFA做了很好的扩展，能够保证更多的节点有备份下一跳</p>
+<h2 id="IP-FRR：Remote-Loop-Free-Alternate（RLFA）"><a href="#IP-FRR：Remote-Loop-Free-Alternate（RLFA）" class="headerlink" title="IP FRR：Remote Loop-Free Alternate（RLFA）"></a>IP FRR：Remote Loop-Free Alternate（RLFA）</h2><p>LFA计算出来的备份下一跳永远是他的直连邻居，RLFA通过tunnel技术，将远端的PQ节点作为备份下一跳， 使得LFA做了很好的扩展，能够保证更多的节点有备份下一跳</p>
 <p>几个概念，以RFC7490第四页拓扑为例，S-&gt;E为需要保护的链路，对于S节点：</p>
 <p>4</p>
 <p>1.P-Space：S节点能够到达的这些节点的集合，基于SPF算法S节点到达这些节点的最短路径不经过保护链路S-&gt;E，排除掉等价路径经过保护链路S-&gt;E的节点。上面的拓扑中S基于SPF算法到达A，B，C节点的路径可以不经过保护链路S-&gt;E，但是S到C的一条等价路径S-&gt;E-&gt;D-&gt;C经过了保护链路，所以C不能算作P-Space<br>2.Q-Space：能够到达E节点的这些节点的集合，基于SPF算法能到达E的这些节点的最短路径不经过保护链路S-&gt;E，排除掉等价路径经过保护链路S-&gt;E的节点。上面拓扑中B，C，D节点基于SPF算法到达E节点的路径可以不经过保护链路S-&gt;E，但是B节点有一条等价路径经过了保护链路S-&gt;E，所以Q-Space是C，D<br>3.PQ点:P-Space和Q-Space的交集就是PQ点。当算不出PQ点的时候，就需要运行Extended P-space来进一步计算。<br>4.Extended P-space：再次以S节点的邻居A为根节点来计算出P-Space为B，C，那么最终的Extended P-space为A，B，C，由于Q-Space为C，D，所以交集为C，C为节点S到E链路的PQ点，作为RLFA。</p>
@@ -422,8 +419,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -533,6 +539,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#节点故障后流量的切换方式"><span class="nav-number">1.</span> <span class="nav-text">节点故障后流量的切换方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-FRR：Loop-Free-Alternates（LFA）"><span class="nav-number">2.</span> <span class="nav-text">IP FRR：Loop-Free Alternates（LFA）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-FRR：Remote-Loop-Free-Alternate（RLFA）"><span class="nav-number">3.</span> <span class="nav-text">IP FRR：Remote Loop-Free Alternate（RLFA）</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
